@@ -10,7 +10,10 @@ import fs from "fs";   // ⬅️ add this
 dotenv.config();
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: "process.env.FRONTEND_URL", // your frontend URL
+  methods: ["GET", "POST"],
+}));
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

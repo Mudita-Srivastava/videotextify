@@ -5,6 +5,8 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { spawn } from "child_process";
 import dotenv from "dotenv";
+import fs from "fs";   // ⬅️ add this
+
 dotenv.config();
 
 const app = express();
@@ -13,8 +15,14 @@ app.use(cors());
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// ✅ Ensure uploads directory exists BEFORE Multer tries to use it
+const uploadPath = path.join(__dirname, "uploads");
+if (!fs.existsSync(uploadPath)) {
+  fs.mkdirSync(uploadPath, { recursive: true });
+}
+
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, path.join(__dirname, "uploads")),
+  destination: (req, file, cb) => cb(null, uploadPath),   // use uploadPath instead of re-joining
   filename: (req, file, cb) => cb(null, Date.now() + "-" + file.originalname),
 });
 

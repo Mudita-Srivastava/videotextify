@@ -1,23 +1,20 @@
-# Use Node.js base image
-FROM node:20
+# Base image: comes with both Python 3.11 + Node.js 20
+FROM nikolaik/python-nodejs:python3.11-nodejs20
 
-# Install Python + ffmpeg
-RUN apt-get update && apt-get install -y python3 python3-pip ffmpeg
-
-# Set working directory
+# Set working directory inside the container
 WORKDIR /app
 
-# Copy all backend files
+# Copy everything into the container
 COPY . .
 
 # Install Node.js dependencies
 RUN npm install
 
 # Install Python dependencies
-RUN pip3 install -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Expose port for Render
+# Expose the port Render will use (matches your Node.js index.js)
 EXPOSE 10000
 
-# Start backend
+# Start the Node.js backend
 CMD ["node", "index.js"]

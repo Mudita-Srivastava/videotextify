@@ -10,6 +10,9 @@ COPY . .
 # Install Node.js dependencies
 RUN npm install
 
+# Install system dependencies for FFmpeg
+RUN apt-get update && apt-get install -y ffmpeg
+
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 

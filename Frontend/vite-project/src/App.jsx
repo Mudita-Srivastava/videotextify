@@ -5,6 +5,7 @@ function App() {
   const [message, setMessage] = useState("");
   const [transcript, setTranscript] = useState("");
   const [showAlert, setShowAlert] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
@@ -22,14 +23,15 @@ function App() {
     formData.append("file", file);
 
     try {
-      const res = await fetch("http://localhost:5000/upload", {
+      setLoading(true);
+      const res = await fetch(`${import.meta.env.VITE_APP_API_URL}/upload`, {
         method: "POST",
         body: formData,
       });
 
       if (res.ok) {
         const data = await res.json();
-        setMessage("✅ File uploaded and transcribed!");
+        setMessage("✅ Your file has been converted into text!");
         console.log("Transcript:", data.transcript);
         setTranscript(data.transcript);
       } else {
@@ -39,12 +41,15 @@ function App() {
       console.error(error);
       setMessage("❌ Error uploading file.");
     }
+    finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="flex items-center justify-center h-screen bg-gray-100 pt-200">
       <div className="bg-white p-8 rounded-2xl shadow-lg w-[400px] text-center">
-        <h1 className="text-2xl font-bold mb-6 text-gray-800">Upload Audio/Video</h1>
+        <h1 className="text-2xl font-bold mb-6 text-gray-800">Upload Video</h1>
 
         {/* File Input Box */}
         <input
@@ -55,11 +60,16 @@ function App() {
         />
 
         {/* Upload Button */}
-        <button
+         <button
           onClick={handleUpload}
-          className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition"
+          disabled={loading} // disable when loading
+          className={`w-full py-2 rounded-lg transition ${
+            loading
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-blue-500 text-white hover:bg-blue-600"
+          }`}
         >
-          Upload
+          {loading ? "Processing..." : "Upload"}
         </button>
 
         {/* Status Message */}
@@ -70,9 +80,16 @@ function App() {
           <p className="mt-2 text-sm text-gray-500">Selected: {file.name}</p>
         )}
 
+        {/* Loading Spinner */}
+        {loading && (
+          <div className ="mt-6 flex justify-center">
+            <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+            </div>
+        )}
+
 
       {/* Transcript Result 👇 add here */}
-      {transcript && (
+      {!loading && transcript && (
         <div className="mt-6 text-left">
         <h2 className="text-lg font-semibold text-gray-800 mb-2"> Text:</h2>
          <div className="bg-gray-100 p-4 rounded-lg text-sm text-gray-700 whitespace-pre-wrap max-h-60 overflow-y-auto">
@@ -90,7 +107,7 @@ function App() {
               navigator.clipboard.writeText(transcript);
               setShowAlert(true);
              setTimeout(() => setShowAlert(false), 2000)
-             // alert("✅ Text copied to clipboard!");
+             // alert("✅ Text copied!");
             }}
             className="mt-3 bg-green-500 text-white py-1 px-4 rounded-lg hover:bg-green-600 transition"
           >

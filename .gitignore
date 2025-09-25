@@ -3,12 +3,14 @@ node_modules/
 dist/
 dist-ssr/
 *.local
+.env
 
 # Python (backend)
 __pycache__/
 *.py[cod]
 *.pyo
 *.pyd
+.env
 
 # Virtual environments
 env/

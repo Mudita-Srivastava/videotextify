@@ -4,6 +4,8 @@ import cors from "cors";
 import path from "path";
 import { fileURLToPath } from "url";
 import { spawn } from "child_process";
+import dotenv from "dotenv";
+dotenv.config();
 
 const app = express();
 app.use(cors());
@@ -25,7 +27,7 @@ app.post("/upload", upload.single("file"), (req, res) => {
 
   // Run Python Whisper script
   console.log(req.file.path);
-  const pythonProcess = spawn("python", ["transcribe.py", req.file.path]);
+  const pythonProcess = spawn(process.env.PYTHON_PATH, ["transcribe.py", req.file.path]);
 
   let transcript = "";
   pythonProcess.stdout.on("data", (data) => {
@@ -48,6 +50,6 @@ app.post("/upload", upload.single("file"), (req, res) => {
   });
 });
 
-app.listen(5000, () => {
-  console.log("🚀 Server running at http://localhost:5000");
+app.listen(process.env.PORT, () => {
+  console.log("🚀 Server running");
 });

@@ -5,15 +5,17 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { spawn } from "child_process";
 import dotenv from "dotenv";
-import fs from "fs";   // ⬅️ add this
+import fs from "fs"; // ⬅️ add this
 
 dotenv.config();
 
 const app = express();
-app.use(cors({
-  origin: "process.env.FRONTEND_URL", // your frontend URL
-  methods: ["GET", "POST"],
-}));
+app.use(
+  cors({
+    origin: "process.env.FRONTEND_URL", // your frontend URL
+    methods: ["GET", "POST"],
+  })
+);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -25,7 +27,7 @@ if (!fs.existsSync(uploadPath)) {
 }
 
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, uploadPath),   // use uploadPath instead of re-joining
+  destination: (req, file, cb) => cb(null, uploadPath), // use uploadPath instead of re-joining
   filename: (req, file, cb) => cb(null, Date.now() + "-" + file.originalname),
 });
 
@@ -38,11 +40,15 @@ app.post("/upload", upload.single("file"), (req, res) => {
 
   // Run Python Whisper script
   console.log(req.file.path);
-  const pythonProcess = spawn(process.env.PYTHON_PATH, ["transcribe.py", req.file.path]);
+  const pythonProcess = spawn(process.env.PYTHON_PATH, [
+    "transcribe.py",
+    req.file.path,
+  ]);
 
   let transcript = "";
   pythonProcess.stdout.on("data", (data) => {
     transcript += data.toString();
+    console.log("mudita logs: ", transcript);
   });
 
   pythonProcess.stderr.on("data", (data) => {

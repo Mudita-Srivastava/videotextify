@@ -12,8 +12,8 @@ dotenv.config();
 const app = express();
 app.use(
   cors({
-    origin: "process.env.FRONTEND_URL", // your frontend URL
-    methods: ["GET", "POST"],
+    origin: process.env.FRONTEND_URL, // your frontend URL
+    // methods: ["GET", "POST"],
   })
 );
 
@@ -56,7 +56,9 @@ app.post("/upload", upload.single("file"), (req, res) => {
   });
 
   pythonProcess.on("close", (code) => {
+    console.log("before file transcribed");
     if (code === 0) {
+      console.log("transcription send");
       res.json({
         message: "✅ File uploaded and transcribed",
         transcript: transcript.trim(),

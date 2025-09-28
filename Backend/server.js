@@ -10,13 +10,20 @@ import fs from "fs"; // ⬅️ add this
 dotenv.config();
 
 const app = express();
-app.use(cors());
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL,
+    methods: ["GET", "POST","OPTIONS"],
+  })
+);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // ✅ Ensure uploads directory exists BEFORE Multer tries to use it
-const uploadPath = path.join(__dirname, "uploads");
+//const uploadPath = path.join(__dirname, "uploads");
+const uploadPath="/tmp";
+
 if (!fs.existsSync(uploadPath)) {
   fs.mkdirSync(uploadPath, { recursive: true });
 }
@@ -29,12 +36,20 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 app.post("/upload", upload.single("file"), (req, res) => {
+  console.log("File uploaded:", req.file);
   if (!req.file) {
+    console.log("No file received");
     return res.status(400).json({ error: "No file uploaded" });
   }
 
+  //check file exists before spawing python
+  if (!fs.existsSync(req.file.path)) {
+    console.log("File missing:", req.file.path);
+    return res.status(500).json({ error: "Uploaded file missing on server" });
+  }
+
   // Run Python Whisper script
-  console.log(req.file.path);
+  console.log("File exists:", req.file.path);
   const pythonProcess = spawn(process.env.PYTHON_PATH, [
     "transcribe.py",
     req.file.path,

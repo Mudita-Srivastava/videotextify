@@ -6,6 +6,8 @@ import { fileURLToPath } from "url";
 import { spawn } from "child_process";
 import dotenv from "dotenv";
 import fs from "fs"; // ⬅️ add this
+import youtubeRoutes from "./routes/youtubeRoute.js";
+import uploadRoutes from "./routes/uploadRoute.js";
 
 dotenv.config();
 
@@ -13,17 +15,18 @@ const app = express();
 app.use(
   cors({
     origin: process.env.FRONTEND_URL,
-    methods: ["GET", "POST","OPTIONS","HEAD","PUT","PATCH"],
-    
+    methods: ["GET", "POST", "OPTIONS", "HEAD", "PUT", "PATCH"],
   })
 );
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+app.use(express.json());
+
+// const __filename = fileURLToPath(import.meta.url);
+// const __dirname = path.dirname(__filename);
 
 // ✅ Ensure uploads directory exists BEFORE Multer tries to use it
 //const uploadPath = path.join(__dirname, "uploads");
-const uploadPath="/tmp";
+const uploadPath = "/tmp";
 
 if (!fs.existsSync(uploadPath)) {
   fs.mkdirSync(uploadPath, { recursive: true });
@@ -79,6 +82,9 @@ app.post("/upload", upload.single("file"), (req, res) => {
     }
   });
 });
+
+app.use("/api", uploadRoutes);
+app.use("/api", youtubeRoutes);
 
 app.listen(process.env.PORT, () => {
   console.log("🚀 Server running");

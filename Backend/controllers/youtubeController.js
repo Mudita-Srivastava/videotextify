@@ -8,8 +8,12 @@ const __dirname = path.dirname(__filename);
 export const youtubeController = (req, res) => {
   const { url } = req.body;
 
-  if (!url) {
-    return res.status(400).json({ error: "YouTube URL is required" });
+  const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+$/;
+
+  if (!url || !youtubeRegex.test(url)) {
+    return res
+      .status(400)
+      .json({ error: "Invalid URL. Please enter a valid YouTube link." });
   }
 
   console.log("Received YouTube URL:", url);
@@ -22,11 +26,11 @@ export const youtubeController = (req, res) => {
   let transcript = "";
 
   pythonProcess.stdout.on("data", (data) => {
-   const text = data.toString();
+    const text = data.toString();
 
-   if(!text.includes("[download")) {
-    transcript +=text;
-   }
+    if (!text.includes("[download")) {
+      transcript += text;
+    }
     console.log("Transcript chunk:", data.toString());
   });
 

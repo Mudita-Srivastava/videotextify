@@ -3,3 +3,4 @@ pydub
 noisereduce
 soundfile
 python-dotenv
+yt_dlp

@@ -27,8 +27,7 @@ COPY . .
 # Ensure cookies.txt is available for youtube_transcribe.py
 COPY python/cookies.txt ./python/cookies.txt
 
-# Optional: copy .env
-COPY .env .env
+
 
 # Expose port used by Node.js backend
 EXPOSE 10000

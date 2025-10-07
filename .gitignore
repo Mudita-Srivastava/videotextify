@@ -21,6 +21,8 @@ __pycache__/
 .mypy_cache/
 .ipynb_checkpoints/
 .env
+python/__pycache__/
+python/cookies.txt     # ✅ Correct — ensures cookies aren't committed
 
 # Virtual environments
 env/
@@ -108,3 +110,11 @@ downloads/
 # =======================
 .python-version
 .python_env/
+
+# =======================
+# Docker artifacts
+# =======================
+*.pid
+*.tar
+*.log
+docker-compose.override.yml

@@ -17,7 +17,7 @@ def download_audio_from_youtube(url, output_file="temp_audio.mp3"):
         # --- END FIX ---
 
         # Set to False to see yt-dlp output for debugging 
-        'quiet': False,
+        'quiet': True,
 
         'postprocessors': [{
             'key': 'FFmpegExtractAudio',
@@ -62,17 +62,17 @@ if __name__ == "__main__":
         url = sys.argv[1]
 
         # Step 1: Download
-        print(f"Starting audio download for: {url}")
+       
         audio_file = download_audio_from_youtube(url)
-        print("Download complete. Starting transcription...")
+       
 
         # Step 2: Transcribe
         transcript = transcribe_audio(audio_file)
 
         # Print transcript to standard output for further processing
-        print("--- TRANSCRIPT ---")
+        
         print(transcript.encode("utf-8", errors="ignore").decode("utf-8"))
-        print("--- END TRANSCRIPT ---")
+      
 
     except Exception as e:
         print(f"Python error: {type(e).__name__}: {e}", file=sys.stderr)
